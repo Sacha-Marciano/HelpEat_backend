@@ -1,12 +1,13 @@
-// Import schema
-const users = require("../models/users");
-
 // Import hash encryption
 const bcrypt = require("bcryptjs");
 
 // Import token handler and signature key
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../utils/config");
+
+// Import schemas
+const users = require("../models/users");
+const recipes = require("../models/recipes");
 
 // Import schema and customized errors
 const BadRequestError = require("../utils/errors/BadRequestError");
@@ -79,7 +80,7 @@ module.exports.login = (req, res, next) => {
 };
 
 // Add recipeId to user's favorite array
-module.exports.addFavorite = (req, res) => {
+module.exports.addFavorite = (req, res, next) => {
   const { recipeId } = req.body;
   users
     .findByIdAndUpdate(
@@ -92,12 +93,18 @@ module.exports.addFavorite = (req, res) => {
       res.send(data);
     })
     .catch((err) => {
-      console.log(err);
+      if (err.name === "DocumentNotFoundError") {
+        next(new NotFoundError("Data not found"));
+      } else if (err.name === "CastError" || err.name === "ValidationError") {
+        next(new BadRequestError("Invalid data"));
+      } else {
+        next(err);
+      }
     });
 };
 
 // Delete recipeId from user's favorite array
-module.exports.deleteFavorite = (req, res) => {
+module.exports.deleteFavorite = (req, res, next) => {
   const { recipeId } = req.body;
   users
     .findByIdAndUpdate(
@@ -110,32 +117,49 @@ module.exports.deleteFavorite = (req, res) => {
       res.send(data);
     })
     .catch((err) => {
-      console.log(err);
+      if (err.name === "DocumentNotFoundError") {
+        next(new NotFoundError("Data not found"));
+      } else if (err.name === "CastError" || err.name === "ValidationError") {
+        next(new BadRequestError("Invalid data"));
+      } else {
+        next(err);
+      }
     });
 };
 
 // Add recipeId (from params) to user's schedule array
-module.exports.addRecipeSchedule = (req, res) => {
+module.exports.addRecipeSchedule = (req, res, next) => {
   const { dayIndex, time, recipeId } = req.body;
-  users
-    .findByIdAndUpdate(
-      req.user._id,
-      {
-        [`schedule.${dayIndex}.scheduledRecipes.${time}`]: recipeId,
-      },
-      { new: true },
-    )
+  recipes
+    .findById(recipeId)
     .orFail()
-    .then((data) => {
-      res.send(data);
+    .then(() => {
+      return users
+        .findByIdAndUpdate(
+          req.user._id,
+          {
+            [`schedule.${dayIndex}.scheduledRecipes.${time}`]: recipeId,
+          },
+          { new: true },
+        )
+        .orFail()
+        .then((data) => {
+          res.send(data);
+        });
     })
     .catch((err) => {
-      console.log(err);
+      if (err.name === "DocumentNotFoundError") {
+        next(new NotFoundError("Data not found"));
+      } else if (err.name === "CastError" || err.name === "ValidationError") {
+        next(new BadRequestError("Invalid data"));
+      } else {
+        next(err);
+      }
     });
 };
 
 // Delete recipeId from user's schedule array
-module.exports.deleteRecipeSchedule = (req, res) => {
+module.exports.deleteRecipeSchedule = (req, res, next) => {
   const { dayIndex, time } = req.body;
   users
     .findByIdAndUpdate(
@@ -150,6 +174,12 @@ module.exports.deleteRecipeSchedule = (req, res) => {
       res.send(data);
     })
     .catch((err) => {
-      console.log(err);
+      if (err.name === "DocumentNotFoundError") {
+        next(new NotFoundError("Data not found"));
+      } else if (err.name === "CastError" || err.name === "ValidationError") {
+        next(new BadRequestError("Invalid data"));
+      } else {
+        next(err);
+      }
     });
 };

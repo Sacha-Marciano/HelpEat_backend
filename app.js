@@ -1,15 +1,16 @@
 //  Import from packages
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-
-//  Import routes index
-const routes = require("./routes/index"); //  /index is optional
 
 // Import middlewares
 const { errors } = require("celebrate");
 const errorHandler = require("./middlewares/error-handler");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
+
+//  Import routes index
+const routes = require("./routes/index"); //  /index is optional
 
 //  Connect to database
 mongoose.connect("mongodb://127.0.0.1:27017/HelpEat_db");
@@ -18,12 +19,6 @@ mongoose.connect("mongodb://127.0.0.1:27017/HelpEat_db");
 const app = express();
 
 //  App's logic
-app.use((req, res, next) => {
-  req.user = {
-    _id: "672a0b662cb47939ba3433be",
-  };
-  next();
-});
 app.use(cors()); //  All origins are allowed for tests.
 app.use(express.json()); //  Convert request to JSON.
 app.use(requestLogger); // Log all requests to request.log

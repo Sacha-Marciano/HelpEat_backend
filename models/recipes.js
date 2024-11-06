@@ -9,7 +9,6 @@ const recipeSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    //  change to type:Image,
     required: true,
   },
   ingredients: {
@@ -23,6 +22,11 @@ const recipeSchema = new mongoose.Schema({
   instruction: {
     type: Array,
     required: false,
+  },
+  owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "user",
+    required: true,
   },
 });
 
