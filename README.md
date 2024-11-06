@@ -37,6 +37,7 @@ DEFAULT: all unknown routes or endpoint will end in a 404 response
 
 From new to old:
 
+- v1.2.0 : Fix after review, add helmet and rate limiter modules. fix lint errors
 - v1.1.1 : Update README after deployment
 - v1.1.0 : fix before deployment
 - v1.0.0 : initial commit

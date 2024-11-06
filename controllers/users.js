@@ -134,7 +134,7 @@ module.exports.addRecipeSchedule = (req, res, next) => {
     .findById(recipeId)
     .orFail()
     .then(() => {
-      return users
+      users
         .findByIdAndUpdate(
           req.user._id,
           {
