@@ -33,17 +33,36 @@ module.exports.getCurrentUser = (req, res, next) => {
     });
 };
 
+// Sends sends username for owner name
+module.exports.getUsername = (req, res, next) => {
+  users
+    .findById(req.params.userId)
+    .orFail()
+    .then((user) => {
+      const response = { ownerName: user.name };
+      res.send(response);
+    })
+    .catch((err) => {
+      if (err.name === "DocumentNotFoundError") {
+        next(new NotFoundError("Data not found"));
+      } else if (err.name === "CastError" || err.name === "ValidationError") {
+        next(new BadRequestError("Invalid data"));
+      } else {
+        next(err);
+      }
+    });
+};
+
 // Create a new user based on request body
 module.exports.createUser = (req, res, next) => {
-  const { name, avatar, email } = req.body;
+  const { name, email } = req.body;
   bcrypt
     .hash(req.body.password, 10)
-    .then((hash) => users.create({ name, avatar, email, password: hash }))
+    .then((hash) => users.create({ name, email, password: hash }))
     .then((user) => {
       res.status(201).send({
         _id: user._id,
         name: user.name,
-        avatar: user.avatar,
         email: user.email,
       });
     })
@@ -90,7 +109,7 @@ module.exports.addFavorite = (req, res, next) => {
     )
     .orFail()
     .then((data) => {
-      res.send(data);
+      res.send(data.favoriteRecipesId);
     })
     .catch((err) => {
       if (err.name === "DocumentNotFoundError") {
@@ -114,7 +133,7 @@ module.exports.deleteFavorite = (req, res, next) => {
     )
     .orFail()
     .then((data) => {
-      res.send(data);
+      res.send(data.favoriteRecipesId);
     })
     .catch((err) => {
       if (err.name === "DocumentNotFoundError") {
@@ -144,7 +163,7 @@ module.exports.addRecipeSchedule = (req, res, next) => {
         )
         .orFail()
         .then((data) => {
-          res.send(data);
+          res.send(data.schedule);
         });
     })
     .catch((err) => {
@@ -171,7 +190,7 @@ module.exports.deleteRecipeSchedule = (req, res, next) => {
     )
     .orFail()
     .then((data) => {
-      res.send(data);
+      res.send(data.schedule);
     })
     .catch((err) => {
       if (err.name === "DocumentNotFoundError") {

@@ -8,11 +8,6 @@ const userSchema = new mongoose.Schema({
     minlength: 2,
     maxlength: 30,
   },
-  avatar: {
-    type: String,
-    default:
-      "https://images.unsplash.com/photo-1730543021622-80242a8db0a4?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw5fHx8ZW58MHx8fHx8",
-  },
   email: {
     type: String,
     required: true,

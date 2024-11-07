@@ -6,6 +6,7 @@ const {
   validateRecipeId,
   validateScheduleAdd,
   validateScheduleDelete,
+  validateOwnerId,
 } = require("../middlewares/validation");
 
 const {
@@ -14,7 +15,11 @@ const {
   deleteFavorite,
   addRecipeSchedule,
   deleteRecipeSchedule,
+  getUsername,
 } = require("../controllers/users");
+
+// No auth required
+router.get("/:userId/name", validateOwnerId, getUsername);
 
 // Below routes are protected by auth
 router.use(auth);
