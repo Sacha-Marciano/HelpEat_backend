@@ -37,6 +37,8 @@ DEFAULT: all unknown routes or endpoint will end in a 404 response
 
 From new to old:
 
+- v2.1.0 change signup response, update README
+- v2.0.0 : Integrate backend to frontend
 - v1.2.0 : Fix after review, add helmet and rate limiter modules. fix lint errors
 - v1.1.1 : Update README after deployment
 - v1.1.0 : fix before deployment

@@ -60,11 +60,7 @@ module.exports.createUser = (req, res, next) => {
     .hash(req.body.password, 10)
     .then((hash) => users.create({ name, email, password: hash }))
     .then((user) => {
-      res.status(201).send({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-      });
+      res.status(201).send(user);
     })
     .catch((err) => {
       if (err.name === "MongoServerError") {
