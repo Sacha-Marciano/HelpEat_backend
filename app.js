@@ -26,8 +26,8 @@ mongoose.connect(DATABASE_ADRESS);
 const app = express();
 
 //  App's logic
-// app.use(limiter); // Protect app from spam attacks
-// app.use(helmet()); // Set security headers
+app.use(limiter); // Protect app from spam attacks
+app.use(helmet()); // Set security headers
 app.use(cors()); // All origins are allowed for tests.
 app.use(express.json()); // Convert request to JSON.
 app.use(requestLogger); // Log all requests to request.log
