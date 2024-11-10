@@ -2,16 +2,17 @@
 
 This is the back-end to the HelpEat app. It is the server that will handle requests from the front end regarding users and recipes data. The server is connected to a database were all the information is stored.
 
+It serves as the backend to the Helpeat application that can be visited here : [https://helpeat.jumpingcrab.com/]
+
 The server can be accessed via :
-https://api.helpeat.jumpingcrab.com
-https://www.helpeat.jumpingcrab.com
-https://helpeat.jumpingcrab.com
-or http
+[https://api.helpeat.jumpingcrab.com]
 
 ## Technical description
 
 This code uses express npm package to create a server which by default listen to port 3001. It connectcs to a MongoDB database via the mongoose npm package and uses the cors npm package to allow domains origins.
 The logic of the app is simple : listen to requests sent to server, check if the request match the conditions of routes, endpoints and models (default responses to unknown routes implemented), and sends a response based on the request. The app can read, modify or delete data in the database.
+This backend is deployed on a Google Cloud Virtual Machine and run constantly thnaks to PM2 package.
+All http request will automatically be redirected to https thanks to Certbot
 
 ## Handled requests
 
