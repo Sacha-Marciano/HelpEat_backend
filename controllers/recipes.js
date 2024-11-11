@@ -1,6 +1,9 @@
 // Import mongoose for ObjectId
 const mongoose = require("mongoose");
 
+const fs = require("fs");
+const path = require("path");
+
 // Import schema
 const recipes = require("../models/recipes");
 
@@ -21,20 +24,23 @@ module.exports.getAllRecipes = (req, res, next) => {
 
 // Add an item to the recipes collection
 module.exports.createRecipe = (req, res, next) => {
-  const { name, image, ingredients, measures, instructions } = req.body;
+  const { name, ingredients, measures, steps, imageUrl } = req.body;
   const owner = req.user._id;
-  recipes
-    .create({ name, image, ingredients, measures, instructions, owner })
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      if (err.name === "ValidationError") {
-        next(new BadRequestError("Data is not valid"));
-      } else {
-        next(err);
-      }
+
+  try {
+    const newRecipe = new recipes({
+      name,
+      ingredients,
+      measures,
+      steps,
+      imageUrl,
+      owner,
     });
+    newRecipe.save();
+    res.status(201).json(newRecipe);
+  } catch (error) {
+    res.status(500).json({ message: "Error creating recipe", error });
+  }
 };
 
 // Delete item if user is owner
@@ -54,6 +60,17 @@ module.exports.deleteRecipe = (req, res, next) => {
         .findByIdAndRemove(recipeId)
         .orFail()
         .then((data) => {
+          // Delete the image file if it exists
+          if (data.imageUrl) {
+            const imagePath = path.join(__dirname, "../", data.imageUrl);
+
+            fs.unlink(imagePath, (err) => {
+              if (err) {
+                console.error("Error deleting image:", err);
+              }
+            });
+          }
+
           res.send(data);
         });
     })

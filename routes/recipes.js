@@ -20,7 +20,7 @@ router.get("/", getAllRecipes);
 // Below routes are protected by auth
 router.use(auth);
 
-router.post("/", validateCreateRecipe, createRecipe);
+router.post("/", createRecipe);
 router.delete("/", validateRecipeId, deleteRecipe);
 
 module.exports = router;
