@@ -42,7 +42,8 @@ const upload = multer({ storage: storage });
 app.use(limiter); // Protect app from spam attacks
 app.use(cors()); // All origins are allowed for tests.
 app.use(helmet({ crossOriginResourcePolicy: false })); // Set security headers
-app.use(express.json()); // Convert request to JSON.
+app.use(express.json({ limit: "10mb" })); // Adjust the limit as necessary
+app.use(express.urlencoded({ limit: "10mb", extended: true })); // For form data
 
 // server.js or app.js
 app.post("/api/upload", upload.single("image"), (req, res) => {
