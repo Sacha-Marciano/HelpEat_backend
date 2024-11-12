@@ -24,7 +24,8 @@ module.exports.getAllRecipes = (req, res, next) => {
 
 // Add an item to the recipes collection
 module.exports.createRecipe = (req, res, next) => {
-  const { name, ingredients, measures, steps, imageUrl } = req.body;
+  const { name, ingredients, measures, steps, imageUrl, instructions } =
+    req.body;
   const owner = req.user._id;
 
   try {
@@ -34,6 +35,7 @@ module.exports.createRecipe = (req, res, next) => {
       measures,
       steps,
       imageUrl,
+      instructions,
       owner,
     });
     newRecipe.save();
