@@ -1,52 +1,128 @@
-# HelpEat_backend
+# HelpEat Backend
 
-This is the back-end to the HelpEat app. It is the server that will handle requests from the front end regarding users and recipes data. The server is connected to a database were all the information is stored.
+HelpEat Backend is a Node.js/Express REST API that powers the HelpEat application, providing endpoints for user management, recipe management, authentication, scheduling, and favorites. It uses MongoDB for data storage and includes robust validation, error handling, security, and logging features.
 
-It serves as the backend to the Helpeat application that can be visited here : [https://helpeat.jumpingcrab.com/]
+## Table of Contents
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+- [Environment Variables](#environment-variables)
+- [API Endpoints](#api-endpoints)
+  - [Authentication](#authentication)
+  - [User Endpoints](#user-endpoints)
+  - [Recipe Endpoints](#recipe-endpoints)
+  - [Image Upload](#image-upload)
+- [Error Handling](#error-handling)
+- [Rate Limiting & Security](#rate-limiting--security)
+- [Logging](#logging)
+- [Project Structure](#project-structure)
+- [License](#license)
 
-The server can be accessed via :
-[https://api.helpeat.jumpingcrab.com]
+---
 
-## Technical description
+## Features
+- User registration and login with JWT authentication
+- Recipe CRUD (create, read, delete)
+- Image upload for recipes
+- User favorites and weekly meal scheduling
+- Input validation with Celebrate/Joi
+- Custom error handling and logging
+- Rate limiting and security headers
 
-This code uses express npm package to create a server which by default listen to port 3001. It connectcs to a MongoDB database via the mongoose npm package and uses the cors npm package to allow domains origins.
-The logic of the app is simple : listen to requests sent to server, check if the request match the conditions of routes, endpoints and models (default responses to unknown routes implemented), and sends a response based on the request. The app can read, modify or delete data in the database.
-This backend is deployed on a Google Cloud Virtual Machine and run constantly thnaks to PM2 package.
-All http request will automatically be redirected to https thanks to Certbot
+## Tech Stack
+- Node.js, Express.js
+- MongoDB, Mongoose
+- JWT for authentication
+- Multer for file uploads
+- Celebrate/Joi for validation
+- Winston for logging
+- Helmet & CORS for security
 
-## Handled requests
+## Getting Started
 
-No auth required :
+1. **Clone the repository:**
+   ```bash
+   git clone <repo-url>
+   cd HelpEat_backend
+   ```
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+3. **Set up environment variables:**
+   Create a `.env` file in the root directory (see [Environment Variables](#environment-variables)).
+4. **Start the server:**
+   ```bash
+   npm run start
+   # or for development with hot reload
+   npm run dev
+   ```
 
-- POST /signin : login users if email and password match database
-- POST /signup : create a new user
-- GET /recipes : returns all recipes from collection
+The server will run on `http://localhost:3001` by default.
 
-Auth required :
+## Environment Variables
+Create a `.env` file with the following (example values):
+```
+PORT=3001
+JWT_SECRET=your_jwt_secret
+DATABASE_ADRESS=mongodb://127.0.0.1:27017/HelpEat_db
+NODE_ENV=development
+```
 
-- POST /recipes : create a new recipe and adds it to database
-- DELETE/recipes : delete recipe from database if the user is the owner
-- GET /users/me : return current user
-- POST /users/favorite : add a recipe ID to the favorite array of user
-- DELETE /users/favorite : delete a recipe ID from the favorite array of user
-- POST /users/schedule : add a recipe ID to the correct key of the scheduled recipes object (inside schedule object of user)
-- DELETE /users/schedule : delete a recipe ID from the correct key of the scheduled recipes object (inside schedule object of user)
+## API Endpoints
 
-DEFAULT: all unknown routes or endpoint will end in a 404 response
+### Authentication
+- `POST /signin` — Login with email and password. Returns JWT token.
+- `POST /signup` — Register a new user.
 
-## Updates
+### User Endpoints
+- `GET /users/me` — Get current user info (auth required)
+- `GET /users/:userId/name` — Get username by user ID
+- `POST /users/favorite` — Add a recipe to favorites (auth required)
+- `DELETE /users/favorite` — Remove a recipe from favorites (auth required)
+- `POST /users/schedule` — Add a recipe to the user's weekly schedule (auth required)
+- `DELETE /users/schedule` — Remove a recipe from the user's schedule (auth required)
 
-From new to old:
+### Recipe Endpoints
+- `GET /recipes` — Get all recipes
+- `POST /recipes` — Create a new recipe (auth required)
+- `DELETE /recipes` — Delete a recipe by ID (auth required, only owner)
 
-- v2.1.0 change signup response, update README
-- v2.0.0 : Integrate backend to frontend
-- v1.2.0 : Fix after review, add helmet and rate limiter modules. fix lint errors
-- v1.1.1 : Update README after deployment
-- v1.1.0 : fix before deployment
-- v1.0.0 : initial commit
+### Image Upload
+- `POST /api/upload` — Upload an image file (multipart/form-data, field: `image`). Returns `{ imageUrl }`.
+- `GET /uploads/:filename` — Access uploaded images
 
-## Running the Project
+## Error Handling
+- Custom error classes for 400, 401, 403, 404, 409, and 500 errors
+- All errors return JSON with a `message` field
+- Unknown routes return 404
 
-`npm run start` — to launch the server
+## Rate Limiting & Security
+- 100 requests per 15 minutes per IP (configurable)
+- Helmet for HTTP headers
+- CORS enabled (all origins allowed by default)
 
-`npm run dev` — to launch the server with the hot reload feature
+## Logging
+- All requests and errors are logged to `request.log` and `error.log` using Winston
+
+## Project Structure
+```
+HelpEat_backend/
+├── app.js                # Main application entry point
+├── controllers/          # Route handlers for users and recipes
+├── middlewares/          # Auth, validation, error handling, logging
+├── models/               # Mongoose schemas for users and recipes
+├── routes/               # Express route definitions
+├── uploads/              # Uploaded images
+├── utils/                # Config, rate limiter, custom errors
+├── package.json
+└── README.md
+```
+
+## License
+[ISC](./LICENSE)
+
+---
+
+**Deployed API:** https://api.helpeat.jumpingcrab.com  
+**Frontend:** https://helpeat.jumpingcrab.com
